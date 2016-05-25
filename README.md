@@ -1,5 +1,7 @@
 # Test first elm
 
+Read this at medium: https://medium.com/@danigb/test-first-elm-5d5cceea0efc#.bpr6l1yxy
+
 I've started to learn elm-lang. It's seems to be a wondeful but strange language for people like me coming from an imperative (and mostly object oriented) languages background.
 
 While REPLs are great to do exploratory work and understand how things works in a programming language I'm more used to test driven approach that allows that exploratory approach with the adventage of persisted files (so I can come back to remember what I did).
@@ -8,9 +10,9 @@ Surprisely I didn't found a quick guide to test driven elm programming (probably
 
 ## Etudes Op. 1: Twelve tone
 
-I'm reading "Notes from the Metalevel: An Introduction to Computer Composition" so, for the test I'll steal some examples from Chapter 9 that implements some basic [twelve-tone] and [set-theory] functions. If you don't know what is all about, don't worry, they are very simple functions.
+I'm reading "Notes from the Metalevel: An Introduction to Computer Composition" so, for the test I'll steal some examples from Chapter 9 that implements some basic [twelve-tone](https://en.wikipedia.org/wiki/Twelve-tone_technique) and [set-theory] functions. If you don't know what is all about, don't worry, they are very simple functions.
 
-The book it's used to be online, but I can't found it now. If you're interested, you can read an excerpt from the [Chapter 9 here]() but it's not necessary at all to follow this tutorial.
+The book it's used to be online, but I can't found it now. If you're interested, you can read an excerpt from the [Chapter 9 here](https://github.com/danigb/elm-twelve-tone/blob/master/ch9.pdf) but it's not necessary at all to follow this tutorial.
 
 ## Project setup
 
@@ -49,7 +51,7 @@ main =
 
 Nothing very fancy here: just importing ElmTest (from `elm-community/test`), create a function that returns a `suite` of tests and declaring a `main` function that uses `runSuite` to run the tests.
 
-One important thing to notice is that `assertEqual` __expects the valid result first__.
+Notice that, unlike Javascript, the expected value goes on the left. This is not important to pass the test, but matters when dealing with test assertion errors.
 
 ## Run tests
 
@@ -66,11 +68,17 @@ node tmp/run.js
 Elm is well known for it's detailed and helpful error messages. Here's our:
 
 ```
+-- NAMING ERROR ---------------------------------------- test/TwelveToneTest.elm
+
+Cannot find variable `noteToPc`
+
+7|           test "noteToPc" (assertEqual 7 (noteToPc 55))
+                                             ^^^^^^^^
 ```
 
 ## Write the actual code
 
-Let's write the actual code. The pitch class numbers are just the note numbers without the octave information. Since there's 12 pitches per octave, we just use module 12:
+Let's write the actual code. The pitch class numbers are just the note numbers without the octave information. Since there are 12 notes per octave, and for each octave the first pitch class is 0 and the last is 11, we just only need to apply module operator:
 
 ```elm
 module TwelveTone exposing (noteToPc)
@@ -87,15 +95,7 @@ As you can see, I defined a couple of type aliases, just to be clear about the p
 
 ## Import module
 
-Since we are storing the `TwelveTone.elm` source code into the `src/` directory, we need first to change the `source-directories` value of the `elm-package.json` to point that directory:
-
-```json
-...
-  "source-directories": [
-      "src/"
-  ],
-...
-```
+Since we are storing the `TwelveTone.elm` source code into the `src/` directory, we need first to change the the `elm-package.json` file so `source-directories` is `["src/"]`.
 
 Now we can import the module into the tests:
 
@@ -118,7 +118,7 @@ If we run the tests now we'll see "All tests passed" message.
 
 ## Coda: Learn some elm
 
-Remember the purpose of this setup is to do some exploratory programming and learn some test. Let's try it by implement a couple of functions more from the example. First a function to convert from a list of note numbers to a list of pitch class numbers. Test first:
+Remember the purpose of this setup is to do some exploratory programming and learn some test. Let's try it by implement a couple of functions from the book chapter. First a function to convert from a list of note numbers to a list of pitch class numbers. Test first:
 
 ```elm
 test "listToPcs" (assertEqual [7,10,2,6] (listToPcs [55,58,62,66]))
@@ -135,7 +135,7 @@ listToPcs notes =
   map noteToPc notes
 ```
 
-Pretty straightforward. Just remember to import [map] function from [List] module.
+Pretty straightforward. Just remember to import [map](http://package.elm-lang.org/packages/elm-lang/core/4.0.1/List#map) function from [List](http://package.elm-lang.org/packages/elm-lang/core/4.0.1/List) module.
 
 But the next one is more tricky. We want to _normalize_ the pitch class notes, so always this first note of the list is 0 and the rest are relative to that one. Here's the test:
 
@@ -194,8 +194,8 @@ normalizedPcs notes =
       Nothing -> []
 ```
 
-This is a very common pattern when dealing with `Maybe`.
+This is a very common pattern when dealing with [`Maybe`](http://package.elm-lang.org/packages/elm-lang/core/4.0.1/Maybe).
 
 ## The full score
 
-You can get the full source code at [elm-twelve-tone](). I hope you find it useful and
+You can get the full source code at [elm-twelve-tone](https://github.com/danigb/elm-twelve-tone). I hope you find it useful.
